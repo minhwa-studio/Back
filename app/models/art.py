@@ -1,31 +1,15 @@
-from typing import List, Optional
+from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, Field
 from bson import ObjectId
-
-
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return ObjectId(v)
-
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
-
+from app.models.pyobjectid import PyObjectId
 
 class ArtModel(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
     art_title: str
     art_content: Optional[str] = None
-    heartCnt: int = 0
-    art_comment_ids: List[PyObjectId] = []
+    heartCnt: Optional[int] = 0
+    art_comment: Optional[str] = None  # ERD 기준 comment string 필드
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

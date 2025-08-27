@@ -1,3 +1,4 @@
+# app/core/config.py
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -5,6 +6,7 @@ class Settings(BaseSettings):
     host: str
     port: int
     debug: bool
+    jwt_secret: str  # ← 여기에 추가
 
     class Config:
         env_file = ".env"

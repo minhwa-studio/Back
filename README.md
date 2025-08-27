@@ -1,3 +1,11 @@
+https://www.notion.so/Minhwa-Studio-2547cdb288bf80e7a18ee507a07335aa
+nodejs 20.15.1
+pip install python-jose[cryptography] passlib[bcrypt]
+pip install email-validator
+pip install python-multipart
+uvicorn app.main:app --reload
+
+mongodb+srv://apple:1234@panguin5225.m6oav.mongodb.net/?retryWrites=true&w=majority&appName=Panguin5225
 backend/
 
 │

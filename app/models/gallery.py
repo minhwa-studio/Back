@@ -1,33 +1,17 @@
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
 from bson import ObjectId
-
-
-class PyObjectId(ObjectId):
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return ObjectId(v)
-
-    @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
-
+from app.models.pyobjectid import PyObjectId
 
 class GalleryModel(BaseModel):
     id: Optional[PyObjectId] = Field(default_factory=PyObjectId, alias="_id")
-    art_ids: List[PyObjectId] = []
     user_id: PyObjectId
+    art_id: PyObjectId  # 단일 art_id 기준으로 수정
     gallery_title: str
     gallery_content: Optional[str] = None
-    starCnt: int = 0
-    gallery_comment_ids: List[PyObjectId] = []
+    starCnt: Optional[int] = 0
+    gallery_comment: Optional[str] = None  # 문자열 필드로 단일 코멘트
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
