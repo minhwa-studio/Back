@@ -1,10 +1,19 @@
-# app/main.py
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware  # ✅ 추가
 from app.core.config import settings
 from app.db.mongodb import init_db
 from app.api.routes import predict, user
 
 app = FastAPI()
+
+# ✅ CORS 설정 추가
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 또는 ["http://localhost:19006"] 같은 Expo 주소
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 async def connect_to_mongo():

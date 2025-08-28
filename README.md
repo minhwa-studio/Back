@@ -3,6 +3,7 @@ nodejs 20.15.1
 pip install python-jose[cryptography] passlib[bcrypt]
 pip install email-validator
 pip install python-multipart
+
 uvicorn app.main:app --reload
 
 mongodb+srv://apple:1234@panguin5225.m6oav.mongodb.net/?retryWrites=true&w=majority&appName=Panguin5225
@@ -14,7 +15,7 @@ backend/
 
 │ ├── main.py # FastAPI 서버 엔트리포인트
 
-│ ├── api/  
+│ ├── api/
 
 │ │ ├── routes/
 
