@@ -38,14 +38,17 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
-# ✅ 로그인 응답용 모델
-class TokenResponse(BaseModel):
-    access_token: str
-    token_type: str
-
 # ✅ 사용자 정보 응답 모델 (id 포함!)
 class UserPublic(BaseModel):
     id: str
     email: EmailStr
     name: str
     phone: Optional[str] = None
+
+# ✅ 로그인 응답용 모델
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user: UserPublic 
+
+

@@ -36,7 +36,18 @@ async def login(login_data: UserLogin):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     access_token = create_access_token(data={"sub": str(user.id)})
-    return TokenResponse(access_token=access_token, token_type="bearer")
+
+    return TokenResponse(
+        access_token=access_token,
+        token_type="bearer",
+        user=UserPublic(
+            id=str(user.id),
+            email=user.email,
+            name=user.name,
+            phone=user.phone,
+        )
+    )
+
 
 @router.get("/me", response_model=UserPublic)
 async def get_my_info(current_user: UserModel = Depends(get_current_user)):
