@@ -18,10 +18,20 @@ class PromptRequest(BaseModel):
 @router.post("/predict")
 async def predict_image(req: PromptRequest):
     try:
+        print("📥 받은 req:", req)
+        print("📥 받은 user_id:", req.user_id)
+
         uid = str(uuid.uuid4())[:8]
 
+        # ObjectId 변환
+        try:
+            user_obj_id = PyObjectId(req.user_id)
+        except Exception as e:
+            print("❌ user_id 변환 실패:", e)
+            raise HTTPException(status_code=400, detail="Invalid user_id")
+
         image_doc = ImageModel(
-            user_id=PyObjectId(req.user_id),
+            user_id=user_obj_id,
             gallery_id=None,
             original_img_url="",
             transform_img_url="",
@@ -38,7 +48,9 @@ async def predict_image(req: PromptRequest):
             "user_id": req.user_id,
             "created_at": image_doc.created_at
         }
+
     except Exception as e:
+        print("❌ 최종 예외 발생:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
