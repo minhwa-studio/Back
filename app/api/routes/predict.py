@@ -4,6 +4,7 @@ from typing import Optional
 from app.models.image import ImageModel
 from app.models.pyobjectid import PyObjectId
 from datetime import datetime
+from bson import ObjectId 
 import uuid
 
 # 추후 Stable Diffusion 모델과 통합 예정
@@ -23,15 +24,15 @@ async def predict_image(req: PromptRequest):
 
         uid = str(uuid.uuid4())[:8]
 
-        # ObjectId 변환
+        # ✅ ObjectId 변환 시도
         try:
-            user_obj_id = PyObjectId(req.user_id)
+            user_obj_id = ObjectId(req.user_id)
         except Exception as e:
             print("❌ user_id 변환 실패:", e)
             raise HTTPException(status_code=400, detail="Invalid user_id")
 
         image_doc = ImageModel(
-            user_id=user_obj_id,
+            user_id=user_obj_id,  # ✅ 수정됨
             gallery_id=None,
             original_img_url="",
             transform_img_url="",
@@ -50,8 +51,9 @@ async def predict_image(req: PromptRequest):
         }
 
     except Exception as e:
-        print("❌ 최종 예외 발생:", e)
+        print("❌ 최종 예외 발생:", repr(e))
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @router.get("/images")
