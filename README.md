@@ -1,12 +1,18 @@
+##**기타 메모메모**
+mongodb+srv://apple:1234@panguin5225.m6oav.mongodb.net/?retryWrites=true&w=majority&appName=Panguin5225
 https://www.notion.so/Minhwa-Studio-2547cdb288bf80e7a18ee507a07335aa
-nodejs 20.15.1
-pip install python-jose[cryptography] passlib[bcrypt]
 pip install email-validator
 pip install python-multipart
+nodejs 20.15.1
 
+# 설치할 때 필요한 명령어
+python -m venv venv
+pip install -r requirments.txt
+pip install python-jose[cryptography] passlib[bcrypt]
+
+# 실행할 때
 uvicorn app.main:app --reload
 
-mongodb+srv://apple:1234@panguin5225.m6oav.mongodb.net/?retryWrites=true&w=majority&appName=Panguin5225
 backend/
 
 │
@@ -53,24 +59,3 @@ backend/
 
 └── README.md
 
-uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-실행 코드
-
-설치 코드
-pip install -r requirements.txt
-
-https://www.mongodb.com/try/download/community
-.msi 설치
-
-# MongoDB 서비스 상태 확인
-
-net start | find "MongoDB"
-
-# MongoDB 시작
-
-net start MongoDB
-
-MongoDB for VS Code vscode 확장자
