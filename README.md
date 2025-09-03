@@ -1,4 +1,4 @@
-##**기타 메모메모**
+##**기타 메모메모(무시하세유)**
 mongodb+srv://apple:1234@panguin5225.m6oav.mongodb.net/?retryWrites=true&w=majority&appName=Panguin5225
 https://www.notion.so/Minhwa-Studio-2547cdb288bf80e7a18ee507a07335aa
 pip install email-validator
@@ -6,11 +6,13 @@ pip install python-multipart
 nodejs 20.15.1
 
 # 설치할 때 필요한 명령어
+
 python -m venv venv
 pip install -r requirments.txt
 pip install python-jose[cryptography] passlib[bcrypt]
 
 # 실행할 때
+
 uvicorn app.main:app --reload
 
 backend/
@@ -58,4 +60,3 @@ backend/
 ├── requirements.txt
 
 └── README.md
-
