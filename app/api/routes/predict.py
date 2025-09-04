@@ -1,41 +1,70 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Query
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 from app.models.image import ImageModel
 from app.models.pyobjectid import PyObjectId
 from datetime import datetime
-from bson import ObjectId 
 import uuid
-
-# 추후 Stable Diffusion 모델과 통합 예정
-# from app.services.predict_service import generate_image
+import aiohttp
+import os
+from PIL import Image
 
 router = APIRouter()
 
-class PromptRequest(BaseModel):
-    user_id: Optional[str] = None  # 유저 연결용
+# 폴더 생성
+os.makedirs("minhwa_img", exist_ok=True)
 
+class PredictRequest(BaseModel):
+    user_id: Optional[str] = None
 
 @router.post("/predict")
-async def predict_image(req: PromptRequest):
+async def predict_image(user_id: str = Form(...), file: UploadFile = File(...)):
     try:
-        print("📥 받은 req:", req)
-        print("📥 받은 user_id:", req.user_id)
-
+        print(f"📥 받은 user_id: {user_id}")
+        
+        # origin 이미지 저장
         uid = str(uuid.uuid4())[:8]
+        origin_path = f"minhwa_img/origin_{uid}.png"
+        with open(origin_path, "wb") as f:
+            f.write(await file.read())
 
-        # ✅ ObjectId 변환 시도
-        try:
-            user_obj_id = ObjectId(req.user_id)
-        except Exception as e:
-            print("❌ user_id 변환 실패:", e)
-            raise HTTPException(status_code=400, detail="Invalid user_id")
+        # 8500 서버에 이미지 + prompt 전송
+        generate_url = "http://localhost:8500/generate"
+        prompt = (
+            "elegant minhwastyle, traditional Korean minhwa painting, hanji paper, "
+            "preserve original colors, maintain original color palette, reference original image colors, "
+            "refined ink outlines, sophisticated flat colors, artistic folk style, "
+            "strong edge definition for human figure, soft hanji paper texture for background, "
+            "beautiful portrait painting, graceful human subject, traditional Korean portrait style"
+        )
+        negative_prompt = (
+            "photorealistic, 3d render, glossy, high contrast, saturated colors, "
+            "western oil painting, anime, manga, ukiyo-e, detailed background, "
+            "stamps, seals, red stamps, red seals, ink stamps, "
+            "too white, too pale, faded colors, desaturated colors"
+        )
 
+        data = aiohttp.FormData()
+        data.add_field("prompt", prompt)
+        data.add_field("negative_prompt", negative_prompt)
+        data.add_field("image", open(origin_path, "rb"), filename=f"origin_{uid}.png", content_type="image/png")
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(generate_url, data=data) as res:
+                if res.status != 200:
+                    raise HTTPException(status_code=500, detail="❌ 이미지 생성 실패")
+                
+                transform_path = f"minhwa_img/transform_{uid}.png"
+                with open(transform_path, "wb") as out_file:
+                    out_file.write(await res.read())
+
+        # DB 저장
         image_doc = ImageModel(
-            user_id=user_obj_id,  # ✅ 수정됨
+            user_id=PyObjectId(user_id),
             gallery_id=None,
-            original_img_url="",
-            transform_img_url="",
+            original_img_url=origin_path,
+            transform_img_url=transform_path,
             original_img_name=f"origin_{uid}.png",
             transform_img_name=f"transform_{uid}.png",
             created_at=datetime.utcnow(),
@@ -44,15 +73,16 @@ async def predict_image(req: PromptRequest):
         await image_doc.create()
 
         return {
-            "message": "image created",
+            "message": "민화 이미지 생성 성공",
             "image_id": str(image_doc.id),
-            "user_id": req.user_id,
+            "user_id": user_id,
+            "origin_img": origin_path,
+            "transform_img": transform_path,
             "created_at": image_doc.created_at
         }
 
     except Exception as e:
-        print("❌ 최종 예외 발생:", repr(e))
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"❌ 예외 발생: {str(e)}")
 
 
 
