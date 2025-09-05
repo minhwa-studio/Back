@@ -225,3 +225,30 @@ async def get_transform_image(image_id: str):
     if not path or not os.path.exists(path):
         raise HTTPException(status_code=404, detail="Transformed image file not found")
     return FileResponse(path, media_type="image/png", filename=os.path.basename(path))
+
+@router.delete("/images/{image_id}")
+async def delete_image(image_id: str):
+    """
+    이미지/파일/레코드 삭제
+    """
+    try:
+        doc = await ImageModel.get(PyObjectId(image_id))
+        if not doc:
+            raise HTTPException(status_code=404, detail="Image not found")
+
+        # 디스크 파일 삭제 (있으면)
+        for path in [doc.original_img_url, doc.transform_img_url]:
+            if path and os.path.exists(path):
+                try:
+                    os.remove(path)
+                except Exception:
+                    # 파일 삭제 실패는 치명적이지 않으니 무시
+                    pass
+
+        # DB 레코드 삭제
+        await doc.delete()
+        return {"message": "deleted", "image_id": image_id}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
