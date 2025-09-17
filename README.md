@@ -1,5 +1,3 @@
-좋습니다 👍 지금 업로드해주신 **Back-bepo-gwang.zip** 안의 코드를 기반으로 해서, 제가 정리해주신 **Front README 스타일**과 동일하게 백엔드용 README를 만들어드릴게요.
-
 ---
 
 # **민화사진관 Back (FastAPI)**
@@ -149,7 +147,3 @@ uvicorn app.main:app --reload --port 8000
 4. 전시관 조회: 전체 전시 목록 제공 (검색/정렬 포함)
 
 ---
-
-👉 이렇게 하면 Front README랑 맞춰서 **Back README**도 정리 완료됩니다.
-
-원하시면 제가 **실제 API 스펙 문서화 (예: OpenAPI 기반 예시 JSON request/response)** 도 추가해드릴 수 있어요. 그 부분도 정리해드릴까요?
